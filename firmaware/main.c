@@ -5,13 +5,13 @@
 
 #include "i2chw/i2cmaster.h"
 
+#include "sj2323.h"
+
 //#ifdef REMOTE
 //#include "remote.h"
 //#endif
 
 #define ATTENUATOR 0x88
-#define SELECTOR 0x94
-
 
 #define MUTEF PD4
 #define MUTEC PD1
@@ -93,7 +93,7 @@ void uart_putchar(char c)
 
 void setup_input(uint8_t innum)
 {
-	uint8_t ret = i2c_start(SELECTOR);
+	uint8_t ret = i2c_start(SJ2323_ADDR);
 
 	if ( ret == 0 )
 	{
@@ -101,12 +101,12 @@ void setup_input(uint8_t innum)
 
 		if ( innum == 1 )
 		{
-			ret = i2c_write(0xCB);
+			ret = i2c_write(SJ2323_INPUT_STEREO_GR1);
 //			if ( ret == 0 ) printf("selector stereo channel1 (AUX) ACK\r\n");
 		}
 		if ( innum == 5 )
 		{
-			ret = i2c_write(0xC7);
+			ret = i2c_write(SJ2323_INPUT_6CH);
 //			if ( ret == 0 ) printf("selector 5+1 channel (DVD) ACK\r\n");
 
 		}
@@ -445,7 +445,7 @@ int main(void)
 			PORTB &= ~(1<<LED);
 //			_delay_ms(100);
 		}
-		
+
 		if ( device != 256 ) printf ("founded device address=%02X\r\n",device);
 		_delay_ms(10000);
 
