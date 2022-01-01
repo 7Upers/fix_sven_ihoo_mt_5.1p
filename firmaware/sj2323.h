@@ -28,3 +28,4 @@
 
 //prototipes
 uint8_t sj2323_select_input(uint8_t input);
+uint8_t sj2323_surround(uint8_t enable);

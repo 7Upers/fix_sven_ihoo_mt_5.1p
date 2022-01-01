@@ -23,3 +23,21 @@ uint8_t sj2323_select_input(uint8_t input)
 		return 0;
 	}
 }
+
+uint8_t sj2323_surround(uint8_t enable) {
+	uint8_t ret = i2c_start(SJ2323_ADDR);
+
+	if ( ret == 0 ) {
+		if ( enable ) {
+			ret = i2c_write(SJ2323_SURROUND_ON);
+		}
+		else {
+			ret = i2c_write(SJ2323_SURROUND_OFF);
+		}
+
+		i2c_stop();
+		return 1;
+	}
+
+	return 0;
+}

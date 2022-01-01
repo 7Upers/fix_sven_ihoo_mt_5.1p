@@ -124,6 +124,7 @@ void ch_eff(void)
 		NORF;
 		PRON;
 		//printf("PRO.LOGIC effect\r\n");
+		sj2323_surround(0);
 	}
 	else
 	{
@@ -132,6 +133,7 @@ void ch_eff(void)
 		PROF;
 		NORN;
 		//printf("NORMAL effect\r\n");
+		sj2323_surround(1);
 	}
 }
 
