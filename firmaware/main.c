@@ -13,6 +13,9 @@
 
 #define ATTENUATOR 0x88
 
+#define INPUT_STEREO SJ2323_INPUT_STEREO_GR1
+#define INPUT_DVD SJ2323_INPUT_6CH
+
 #define MUTEF PD4
 #define MUTEC PD1
 
@@ -91,34 +94,6 @@ void uart_putchar(char c)
 }
 */
 
-void setup_input(uint8_t innum)
-{
-	uint8_t ret = i2c_start(SJ2323_ADDR);
-
-	if ( ret == 0 )
-	{
-		//printf("selector ACK\r\n");
-
-		if ( innum == 1 )
-		{
-			ret = i2c_write(SJ2323_INPUT_STEREO_GR1);
-//			if ( ret == 0 ) printf("selector stereo channel1 (AUX) ACK\r\n");
-		}
-		if ( innum == 5 )
-		{
-			ret = i2c_write(SJ2323_INPUT_6CH);
-//			if ( ret == 0 ) printf("selector 5+1 channel (DVD) ACK\r\n");
-
-		}
-	}
-//	else
-//	{
-//		printf("selector connection fail\r\n");
-//	}
-
-	i2c_stop();
-}
-
 void ch_input(void)
 {
 	if ( aux )
@@ -128,7 +103,7 @@ void ch_input(void)
 		AUXF;
 		DVDN;
 		//printf("DVD MODE\r\n");
-		setup_input(5);
+		sj2323_select_input(INPUT_DVD);
 	}
 	else
 	{
@@ -137,7 +112,7 @@ void ch_input(void)
 		DVDF;
 		AUXN;
 		//printf("AUX MODE\r\n");
-		setup_input(1);
+		sj2323_select_input(INPUT_STEREO);
 	}
 }
 
@@ -260,7 +235,7 @@ int main(void)
 
 	sei();
 	i2c_init();
-	printf("I2C bus inited\r\n");
+//	printf("I2C bus inited\r\n");
 
 //	uint8_t pressed = 0;
 
@@ -290,7 +265,7 @@ int main(void)
 		while (ADCSRA & (1 << ADSC)) // wait until conversion is done
 
 		button = ADCH;
-		printf("adc=%d\r\n",button);
+//		printf("adc=%d\r\n",button);
 		if ( button < 250 )
 		{
 //			if ( pressed == 0 )
@@ -318,7 +293,7 @@ int main(void)
 						PROF;
 
 						PWRF;
-						printf("TURN OFF\r\n");
+//						printf("TURN OFF\r\n");
 						//disable power of amplifier
 						AMPF;
 					}
@@ -326,7 +301,7 @@ int main(void)
 					{
 						//is off, need turn on
 						PWRN;
-						printf("TURN ON\r\n");
+//						printf("TURN ON\r\n");
 						//enable power of amplifier
 						AMPN;
 
@@ -337,16 +312,16 @@ int main(void)
 							//is aux
 							AUXN;
 							DVDF;
-							printf("AUX MODE\r\n");
-							setup_input(1);
+//							printf("AUX MODE\r\n");
+							sj2323_select_input(INPUT_STEREO);
 						}
 						else
 						{
 							//is dvd
 							DVDN;
 							AUXF;
-							printf("DVD MODE\r\n");
-							setup_input(5);
+//							printf("DVD MODE\r\n");
+							sj2323_select_input(INPUT_DVD);
 						}
 
 						if ( nor )
@@ -354,14 +329,14 @@ int main(void)
 							//is normal
 							NORN;
 							PROF;
-							printf("NORMAL effect\r\n");
+//							printf("NORMAL effect\r\n");
 						}
 						else
 						{
 							//is prologic
 							PRON;
 							NORF;
-							printf("PRO.LOGIC effect\r\n");
+//							printf("PRO.LOGIC effect\r\n");
 						}
 					}
 

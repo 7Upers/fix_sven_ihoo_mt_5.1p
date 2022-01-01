@@ -14,6 +14,7 @@
 #define SJ2323_MUTE_ON_SR 0xFB
 #define SJ2323_MUTE_OFF_SR 0xFA
 
+#define SJ2323_INPUT_MASK 0xC0
 #define SJ2323_INPUT_STEREO_GR1 0xCB //L1&R1
 #define SJ2323_INPUT_STEREO_GR2 0xCA //L2&R2
 #define SJ2323_INPUT_STEREO_GR3 0xC9 //L3&R3
@@ -24,3 +25,6 @@
 #define SJ2323_SURROUND_OFF 0xD1
 #define SJ2323_MIXED_CH_0DB 0x90
 #define SJ2323_MIXED_CH_6DB 0x91
+
+//prototipes
+uint8_t sj2323_select_input(uint8_t input);

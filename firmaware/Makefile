@@ -16,13 +16,17 @@ main.hex : $(TARGET).elf
 	@echo 'converting'
 	$(OBJ2HEX) -R .eeprom -O ihex $(TARGET).elf $(TARGET).hex
 
-main.elf : $(TARGET).o i2chw.o remote.o
+main.elf : $(TARGET).o i2chw.o remote.o sj2323.o
 	@echo 'linking'
-	$(CC) $(CFLAGS) -o $(TARGET).elf $(TARGET).o i2chw.o remote.o
+	$(CC) $(CFLAGS) -o $(TARGET).elf $(TARGET).o i2chw.o remote.o sj2323.o
 
 remote.o : remote.c
 	@echo 'remote'
 	$(CC) $(CFLAGS) -c -o remote.o remote.c
+
+sj2323.o : sj2323.c
+	@echo 'compilling'
+	$(CC) $(CFLAGS) -c -o sj2323.o sj2323.c
 
 i2chw.o : i2chw/twimaster.c
 	@echo 'i2c'
