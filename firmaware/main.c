@@ -6,12 +6,11 @@
 #include "i2chw/i2cmaster.h"
 
 #include "sj2323.h"
+#include "sj2258.h"
 
 //#ifdef REMOTE
 //#include "remote.h"
 //#endif
-
-#define ATTENUATOR 0x88
 
 #define INPUT_STEREO SJ2323_INPUT_STEREO_GR1
 #define INPUT_DVD SJ2323_INPUT_6CH
@@ -136,55 +135,22 @@ void ch_eff(void)
 	}
 }
 
-void setup_vol(void)
-{
-	//example gvol=31 - atten=41
-	uint8_t atten = 72 - gvol; //ослабление
-		//example 41/10=4
-	uint8_t ten = atten/10;
-		//example 0000 0100 & 0000 0111 = 0000 0100 | 1101 0000 = 1101 0100 = D4
-	uint8_t tenb = (ten&0x07)|0xD0;
-		//example 41-(10*4) = 1
-	uint8_t unit = atten-(10*ten);
-		//example 0000 0001 & 0000 1111 = 0000 0001 | 1110 0000 = 1110 0001 = E1
-	uint8_t unitb = (unit&0x0F)|0xE0;
-
-	uint8_t ret = i2c_start(ATTENUATOR);
-
-	if ( ret == 0 )
-	{
-		//printf("attenuator ACK\r\n");
-		ret = i2c_write(tenb);
-//		if ( ret == 0 ) printf("attenuator volume ten=%d byte=%d ACK\r\n",ten,tenb);
-		ret = i2c_write(unitb);
-//		if ( ret == 0 ) printf("attenuator volume unit=%d byte=%d ACK\r\n",unit,unitb);
-	}
-//	else
-//	{
-//		printf("attenuator connection fail\r\n");
-//	}
-
-	i2c_stop();
-}
-
 void gvol_inc(void)
 {
-	if ( gvol < 72 )
-	{
+	if ( gvol < 72 ) {
 		gvol++;
 	}
 	//printf("G.Volume=%d\r\n",gvol);
-	setup_vol();
+	change_volume(gvol);
 }
 
 void gvol_dec(void)
 {
-	if ( gvol > 0 )
-	{
+	if ( gvol > 0 ) {
 		gvol--;
 	}
 	//printf("G.Volume=%d\r\n",gvol);
-	setup_vol();
+	change_volume(gvol);
 }
 
 
@@ -237,7 +203,8 @@ int main(void)
 	i2c_init();
 //	printf("I2C bus inited\r\n");
 
-//	uint8_t pressed = 0;
+	//long press flag
+	uint8_t pressed = 0;
 
 #ifdef REMOTE
 	uint8_t cmd = 0;
@@ -305,7 +272,7 @@ int main(void)
 						//enable power of amplifier
 						AMPN;
 
-						setup_vol();
+						change_volume(gvol);
 
 						if ( aux )
 						{
@@ -378,56 +345,14 @@ int main(void)
 					}
 				}
 //			}
-		_delay_ms(100);
+			_delay_ms(100);
 		}
 		else
 		{
 			//unpress all buttons
-//			pressed = 0;
+			pressed = 0;
 		}
 
 	}
-/*
-	sei();
-	i2c_init();
-	printf("I2C bus inited\r\n");
-
-	unsigned char ret;
-	unsigned short int device = 256;
-	unsigned char address = 0;
-
-	while (1)
-	{
-		while ( address <= 127 )
-		{
-			//led turn on
-			PORTB |= (1<<LED);
-
-			ret = i2c_start(address<<1);
-
-			if ( ret == 0 ) device = address<<1;
-
-			//print value
-			printf("0x%02X access: %d\r\n",address<<1,ret);
-
-			i2c_stop();
-
-			if ( ret == 0 ) _delay_ms(1000);
-
-			address++;
-
-			//led turn off
-			PORTB &= ~(1<<LED);
-//			_delay_ms(100);
-		}
-
-		if ( device != 256 ) printf ("founded device address=%02X\r\n",device);
-		_delay_ms(10000);
-
-		address = 0;
-		device = 256;
-	}
-	*/
-
 	return 0;
 }

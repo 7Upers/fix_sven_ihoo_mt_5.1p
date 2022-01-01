@@ -16,9 +16,9 @@ main.hex : $(TARGET).elf
 	@echo 'converting'
 	$(OBJ2HEX) -R .eeprom -O ihex $(TARGET).elf $(TARGET).hex
 
-main.elf : $(TARGET).o i2chw.o remote.o sj2323.o
+main.elf : $(TARGET).o i2chw.o remote.o sj2323.o sj2258.o
 	@echo 'linking'
-	$(CC) $(CFLAGS) -o $(TARGET).elf $(TARGET).o i2chw.o remote.o sj2323.o
+	$(CC) $(CFLAGS) -o $(TARGET).elf $(TARGET).o i2chw.o remote.o sj2323.o sj2258.o
 
 remote.o : remote.c
 	@echo 'remote'
@@ -27,6 +27,10 @@ remote.o : remote.c
 sj2323.o : sj2323.c
 	@echo 'compilling'
 	$(CC) $(CFLAGS) -c -o sj2323.o sj2323.c
+
+sj2258.o : sj2258.c
+	@echo 'compilling'
+	$(CC) $(CFLAGS) -c -o sj2258.o sj2258.c
 
 i2chw.o : i2chw/twimaster.c
 	@echo 'i2c'
