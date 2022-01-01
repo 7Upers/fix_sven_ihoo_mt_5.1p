@@ -1,4 +1,4 @@
-//#include <stdio.h>
+#include <stdio.h>
 #include <avr/io.h>
 #include <util/delay.h>
 #include <avr/interrupt.h>
@@ -8,9 +8,13 @@
 #include "sj2323.h"
 #include "sj2258.h"
 
+#include "uart.h"
+#define BAUD 19200
+
 //#ifdef REMOTE
 //#include "remote.h"
 //#endif
+
 
 #define INPUT_STEREO SJ2323_INPUT_STEREO_GR1
 #define INPUT_DVD SJ2323_INPUT_6CH
@@ -33,10 +37,6 @@
 #define STANDBY PC3
 
 #define SYS_LED PB5
-
-//#define BAUD 19200
-//#define MYUBRR F_CPU/16/BAUD-1
-
 
 #define PWRN PORTD&=~_BV(PWR_LED) //on
 #define PWRF PORTD|=_BV(PWR_LED) //off
@@ -66,32 +66,6 @@ uint8_t gvol = 0;
 #define VUPF PORTB|=_BV(VOLUME_UP_LED) //off
 #define VDNN PORTB&=~_BV(VOLUME_DOWN_LED) //on
 #define VDNF PORTB|=_BV(VOLUME_DOWN_LED) //off
-
-/*
-void uart_init(unsigned int ubrr)
-{
-	//set speed
-	UBRR0H = (unsigned char)(ubrr>>8);
-	UBRR0L = (unsigned char)(ubrr);
-	// Enable receiver and transmitter
-	UCSR0B = (1<<RXEN0)|(1<<TXEN0);
-	// Set frame format: 8data, 1stop bit - default
-}
-
-char uart_getchar(void)
-{
-	// Wait for data to be received
-	while (!(UCSR0A & (1<<RXC0)));
-	printf("%c",UDR0);
-	return UDR0;
-}
-
-void uart_putchar(char c)
-{
-	while (!(UCSR0A & (1<<UDRE0))); // Wait until transmission ready.
-	UDR0 = c;
-}
-*/
 
 void ch_input(void)
 {
@@ -203,6 +177,9 @@ int main(void)
 
 	sei();
 	i2c_init();
+
+	uart_init(BAUD);
+
 //	printf("I2C bus inited\r\n");
 
 	//long press flag
